@@ -1,7 +1,7 @@
 import { ConvoyMessage, MessageStatus, QueuedMessage } from "../Domain";
-import { QueueRepository } from "./QueueRepository";
+import { CallHandler } from "./CallHandler";
 
-export class InMemoryQueueRepository implements QueueRepository {
+export class InMemoryCallHandler implements CallHandler {
   private _queue: QueuedMessage[] = [];
 
   set queue(messages: QueuedMessage[]) {
@@ -16,10 +16,10 @@ export class InMemoryQueueRepository implements QueueRepository {
     this._queue.push({ ...message, status: MessageStatus.PENDING });
   }
 
-  setConvoyed(id: number): void {
+  setStatus(id: number, status: MessageStatus): void {
     const newQueue = this._queue.map((message) => {
       if (id === message.messageId) {
-        return { ...message, status: MessageStatus.CONVOYED };
+        return { ...message, status };
       }
       return message;
     });

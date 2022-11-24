@@ -1,13 +1,13 @@
-import { ConvoyMessage } from "./Domain";
+import { ConvoyMessage, MessageStatus, QueuedMessage } from "./Domain";
 import { Elevator } from "./Elevator";
-import { QueueRepository } from "./Repository/QueueRepository";
+import { CallHandler } from "./Repository/CallHandler";
 
 export class OtisLeScribe implements Elevator {
   constructor(
-    private move: (fromStage: number, toStage: number) => Promise<void>,
-    private onboardPeople: (nbPeople: number) => Promise<void>,
-    private offboardPeople: (nbPeople: number) => Promise<void>,
-    private queueRepository: QueueRepository,
+    readonly move: (fromStage: number, toStage: number) => Promise<void>,
+    readonly onboardPeople: (nbPeople: number) => Promise<void>,
+    readonly offboardPeople: (nbPeople: number) => Promise<void>,
+    private eventHandler: CallHandler,
     private logger: any
   ) {}
   private _peopleOnboard: number = 0;
@@ -20,14 +20,33 @@ export class OtisLeScribe implements Elevator {
     return this._currentFloor;
   }
 
-  async start() {
-    if (this.queueRepository.getQueue().length) {
-      await this.convoy(this.queueRepository.getQueue()[0]);
-    }
+  start() {
+    // await this.handleQueue(this.queueRepository.getQueue());
     this.logger("No one to convoy. Waiting for calls...");
   }
 
-  private async convoy({ nbPeople, fromStage, toStage }: ConvoyMessage) {
+  async handleQueue(currentQueue: QueuedMessage[]) {
+    if (currentQueue.length) {
+      const { messageId, nbPeople, fromStage, toStage } =
+        this.eventHandler.getQueue()[0];
+      await this.convoy({ nbPeople, fromStage, toStage });
+      this.eventHandler.setStatus(messageId, MessageStatus.CONVOYED);
+    }
+  }
+
+  onCall(message: ConvoyMessage) {
+    this.eventHandler.saveMessageToQueue(message);
+  }
+
+  private async convoy({
+    nbPeople,
+    fromStage,
+    toStage,
+  }: {
+    nbPeople: number;
+    fromStage: number;
+    toStage: number;
+  }) {
     const currentFloor = this.currentFloor;
     if (currentFloor !== fromStage) {
       this.logger(`Move from ${currentFloor} to ${fromStage}`);
@@ -42,17 +61,5 @@ export class OtisLeScribe implements Elevator {
 
     this.logger(`Off-boarding ${nbPeople} people`);
     await this.offboardPeople(nbPeople);
-  }
-
-  async onMessage(message: ConvoyMessage) {
-    this.queueRepository.saveMessageToQueue(message);
-
-    const currentQueue = this.queueRepository.getQueue();
-    if (currentQueue) {
-      //handle first message
-      await this.convoy(currentQueue[0]);
-      //delete message in queue
-      this.queueRepository.setConvoyed(message.messageId);
-    }
   }
 }
