@@ -1,0 +1,19 @@
+{
+  "name": "elevator",
+  "version": "1.0.0",
+  "description": "by Meidi Airouche",
+  "main": "app/producer/index.js",
+  "scripts": {
+    "start:producer": "tsc && node ./dist/producer/index.js",
+    "start:consumer": "tsc && node ./dist/consumer/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.11.7",
+    "@types/readline-sync": "^1.4.4",
+    "kafka-node": "^3.0.0",
+    "kafkajs": "^1.12.0",
+    "typescript": "^4.8.4"
+  }
+}
