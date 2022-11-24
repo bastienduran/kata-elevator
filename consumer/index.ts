@@ -1,38 +1,42 @@
-import { promisify } from "node:util";
+// import { promisify } from "node:util";
 import { Kafka } from "kafkajs";
+import { move } from "./functions";
 
-/************************************* DO NOT MODIFY **********************************/
+// /************************************* DO NOT MODIFY **********************************/
 
-const delay = promisify(setTimeout);
+// const delay = promisify(setTimeout);
 
-// Number of people convoyed
-let totalPeopleConvoyed = 0;
-// Actual position of the elevator
-let elevatorStage = 0;
+// // Number of people convoyed
+// let totalPeopleConvoyed = 1;
+// // Actual position of the elevator
+// let elevatorStage = 0;
 
-// Move the elevator from given stage to target stage with 1 sec per stage.
-const move = async (fromStage: number, toStage: number) => {
-  await delay(1 * Math.abs(fromStage - toStage) * 1000);
-  console.log(`Elevator moved from stage ${fromStage} to stage ${toStage}`);
-  elevatorStage = toStage;
-};
+// // Move the elevator from given stage to target stage with 1 sec per stage.
+// const move = async (fromStage: number, toStage: number) => {
+//   await delay(1 * Math.abs(fromStage - toStage) * 1000);
+//   console.log(`Elevator moved from stage ${fromStage} to stage ${toStage}`);
+//   elevatorStage = toStage;
+// };
 
-// The elevator take a pause of 1 sec to let people enter
-const onboardPeople = async (nbPeople: number) => {
-  await delay(1 * 1000);
-  console.log(`${nbPeople} onboarded in the elevator`);
-};
+// // The elevator take a pause of 1 sec to let people enter
+// const onboardPeople = async (nbPeople: number) => {
+//   await delay(1 * 1000);
+//   console.log(`${nbPeople} onboarded in the elevator`);
+// };
 
-// The elevator take a pause of 1 sec to let people out
-const offboardPeople = async (nbPeople: number) => {
-  await delay(1 * 1000);
-  console.log(`${nbPeople} offboarded from the elevator`);
-  totalPeopleConvoyed += nbPeople;
-};
+// // The elevator take a pause of 1 sec to let people out
+// const offboardPeople = async (nbPeople: number) => {
+//   await delay(1 * 1000);
+//   console.log(`${nbPeople} offboarded from the elevator`);
+//   totalPeopleConvoyed += nbPeople;
+// };
 
-/**************************************************************************************/
+// /**************************************************************************************/
 
-/********************************* EXERCISE STARTS HERE ****************************/
+// /********************************* EXERCISE STARTS HERE ****************************/
+
+// export const getTotalPeopleConvoyed = () => totalPeopleConvoyed;
+// export const getElevatorStage = () => elevatorStage;
 
 // Example of event handling with Kafka
 const kafka = new Kafka({
