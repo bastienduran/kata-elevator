@@ -48,7 +48,7 @@ const main = async () => {
       fromStage = getRandomIntBetween(0, 10);
       toStage = getRandomExceptMe(0, 10, fromStage);
       await sendPayload({
-        elevatorId: cpt++,
+        messageId: cpt++,
         fromStage: fromStage,
         toStage: toStage,
         nbPeople: getRandomIntBetween(1, 5),

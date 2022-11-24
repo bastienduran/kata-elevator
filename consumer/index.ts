@@ -1,6 +1,9 @@
+import { promisify } from "node:util";
 import { Kafka } from "kafkajs";
 
 /************************************* DO NOT MODIFY **********************************/
+
+const delay = promisify(setTimeout);
 
 // Number of people convoyed
 let totalPeopleConvoyed = 0;
@@ -9,25 +12,22 @@ let elevatorStage = 0;
 
 // Move the elevator from given stage to target stage with 1 sec per stage.
 const move = async (fromStage: number, toStage: number) => {
-  setTimeout(() => {
-    console.log(`Elevator moved from stage ${fromStage} to stage ${toStage}`);
-    elevatorStage = toStage;
-  }, 1 * Math.abs(fromStage - toStage) * 1000);
+  await delay(1 * Math.abs(fromStage - toStage) * 1000);
+  console.log(`Elevator moved from stage ${fromStage} to stage ${toStage}`);
+  elevatorStage = toStage;
 };
 
 // The elevator take a pause of 1 sec to let people enter
 const onboardPeople = async (nbPeople: number) => {
-  setTimeout(() => {
-    console.log(`${nbPeople} onboarded in the elevator`);
-  }, 1 * 1000);
+  await delay(1 * 1000);
+  console.log(`${nbPeople} onboarded in the elevator`);
 };
 
 // The elevator take a pause of 1 sec to let people out
 const offboardPeople = async (nbPeople: number) => {
-  setTimeout(() => {
-    console.log(`${nbPeople} offboarded from the elevator`);
-    totalPeopleConvoyed += nbPeople;
-  }, 1 * 1000);
+  await delay(1 * 1000);
+  console.log(`${nbPeople} offboarded from the elevator`);
+  totalPeopleConvoyed += nbPeople;
 };
 
 /**************************************************************************************/

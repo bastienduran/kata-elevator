@@ -6,7 +6,7 @@ by Meidi Airouche
 
 ### Install Kafka & Zookeeper
 
-<code>docker up -d</code>
+<code>docker-compose up -d</code>
 
 ### Check for Kafka service
 
