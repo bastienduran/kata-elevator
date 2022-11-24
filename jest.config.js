@@ -14,6 +14,7 @@ const config = {
     "!**/vendor/**",
   ],
   coverageDirectory: "coverage/unit",
+  testTimeout: 10000,
 };
 
 module.exports = config;

@@ -1,6 +1,8 @@
 // import { promisify } from "node:util";
 import { Kafka } from "kafkajs";
-import { move } from "./functions";
+import { ConvoyMessage } from "../OtisLeScribe/Domain/ConvoyMessage";
+import { OtisLeScribe } from "../OtisLeScribe/OtisLeScribe";
+import { getTotalPeopleConvoyed } from "./functions";
 
 // /************************************* DO NOT MODIFY **********************************/
 
@@ -51,13 +53,17 @@ const run = async () => {
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
-      console.log("Received: ", {
-        partition,
-        offset: message.offset,
-        value: message.value?.toString(),
-      });
-      const order = JSON.parse(message.value?.toString() || "");
-      await move(order.fromStage, order.toStage);
+      // console.log("Received: ", {
+      //   partition,
+      //   offset: message.offset,
+      //   value: message.value?.toString(),
+      // });
+      const { messageId, fromStage, toStage, nbPeople }: ConvoyMessage =
+        JSON.parse(message.value?.toString() || "");
+      // await move(order.fromStage, order.toStage);
+      const elevator = new OtisLeScribe();
+      await elevator.convoy({ messageId, nbPeople, fromStage, toStage });
+      console.log(`Total convoyed people: ${getTotalPeopleConvoyed()}`);
     },
   });
 };
