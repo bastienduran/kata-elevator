@@ -1,7 +1,7 @@
 // import { promisify } from "node:util";
 import { Kafka } from "kafkajs";
-import { ConvoyMessage } from "../OtisLeScribe/Domain/ConvoyMessage";
-import { OtisLeScribe } from "../OtisLeScribe/OtisLeScribe";
+import { ConvoyMessage } from "../Elevator/Domain/ConvoyMessage";
+import { OtisLeScribe } from "../Elevator/OtisLeScribe/OtisLeScribe";
 import { getTotalPeopleConvoyed } from "./functions";
 
 // /************************************* DO NOT MODIFY **********************************/

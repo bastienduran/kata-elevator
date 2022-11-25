@@ -1,8 +1,8 @@
-import { ReduxCallHandler } from "./CallHandler/ReduxCallHandler";
-import { move, offboardPeople, onboardPeople } from "../consumer/functions";
+import { ReduxCallHandler } from "../CallHandler/ReduxCallHandler";
+import { move, offboardPeople, onboardPeople } from "../../consumer/functions";
 import { OtisLeScribe } from "./OtisLeScribe";
 import { promisify } from "node:util";
-import { ConvoyMessage } from "./Domain";
+import { ConvoyMessage } from "../Domain";
 
 const delay = promisify(setTimeout);
 

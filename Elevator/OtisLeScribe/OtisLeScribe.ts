@@ -1,6 +1,6 @@
-import { ConvoyMessage, MessageStatus, QueuedMessage } from "./Domain";
-import { Elevator } from "./Elevator";
-import { CallHandler } from "./CallHandler/CallHandler";
+import { ConvoyMessage, MessageStatus, QueuedMessage } from "../Domain";
+import { Elevator } from "../Elevator";
+import { CallHandler } from "../CallHandler/CallHandler";
 
 export class OtisLeScribe implements Elevator {
   constructor(
