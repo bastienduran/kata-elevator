@@ -1,14 +1,18 @@
-import { InMemoryCallHandler } from "./Repository/InMemoryCallHandler";
+import { ReduxCallHandler } from "./CallHandler/ReduxCallHandler";
 import { move, offboardPeople, onboardPeople } from "../consumer/functions";
 import { OtisLeScribe } from "./OtisLeScribe";
+import { promisify } from "node:util";
+import { ConvoyMessage } from "./Domain";
+
+const delay = promisify(setTimeout);
 
 describe("OtisLeScribe lift welcome!", () => {
-  let queueRepository: InMemoryCallHandler;
+  let queueRepository: ReduxCallHandler;
   beforeEach((): void => {
-    queueRepository = new InMemoryCallHandler();
+    queueRepository = new ReduxCallHandler();
   });
 
-  it("log when there is no one to convoy", async () => {
+  xit("log when there is no one to convoy", async () => {
     const logger = jest.fn();
     const elevator = new OtisLeScribe(
       move,
@@ -51,16 +55,10 @@ describe("OtisLeScribe lift welcome!", () => {
     elevator.onCall(call1);
     elevator.onCall(call2);
     expect(queueRepository.getQueue()).toEqual([call1, call2]);
-    // expectLogSequence(logger, [
-    //   "Onboarding 1 people",
-    //   "Move from 2 to 3",
-    //   "Off-boarding 1 people",
-    //   "No one to convoy. Waiting for calls...",
-    // ]);
   });
 
   it("convoy 1 people from 0 to 1", async () => {
-    const logger = jest.fn();
+    const logger = jest.fn(console.warn);
     const elevator = new OtisLeScribe(
       move,
       onboardPeople,
@@ -76,66 +74,41 @@ describe("OtisLeScribe lift welcome!", () => {
       nbPeople: 1,
       status: "pending",
     };
+
     elevator.start();
     elevator.onCall(call1);
+    // await delay(5000);
+    jest.setTimeout(testDuration([call1]));
+    await delay(testDuration([call1]));
     expectLogSequence(logger, [
+      // "No one to convoy. Waiting for calls...",
       "Onboarding 1 people",
-      "Move from 0 to 31",
+      "Move from 0 to 1",
       "Off-boarding 1 people",
-      "No one to convoy. Waiting for calls...",
+      // "No one to convoy. Waiting for calls...",
     ]);
   });
-
-  xit("", async () => {
-    const logger = jest.fn();
-    queueRepository.queue = [
-      {
-        messageId: 1,
-        fromStage: 0,
-        toStage: 1,
-        nbPeople: 1,
-        status: "pending",
-      },
-    ];
-    const elevator = new OtisLeScribe(
-      move,
-      onboardPeople,
-      offboardPeople,
-      queueRepository,
-      logger
-    );
-    await elevator.start();
-    expect(queueRepository.getQueue()[0].status).toBe("convoyed");
-  });
-
-  // xit("starting from 0 floor, transport 1 people from 2 to 3", async () => {
-  //   const convoyMessage1 = {
-  //     messageId: 1,
-  //     fromStage: 2,
-  //     toStage: 3,
-  //     nbPeople: 1,
-  //   };
-
-  //   const logger = jest.fn();
-  //   const elevator = new OtisLeScribe(
-  //     move,
-  //     onboardPeople,
-  //     offboardPeople,
-  //     queueRepository,
-  //     logger
-  //   );
-  //   await elevator.onMessage(convoyMessage1);
-  //   expectLogSequence(logger, [
-  //     "Move from 0 to 2",
-  //     "Onboarding 1 people",
-  //     "Move from 2 to 3",
-  //     "Off-boarding 1 people",
-  //   ]);
-  // });
 });
 
 function expectLogSequence(logger = jest.fn(), sequence: string[]) {
   sequence.forEach((step, index) =>
     expect(logger.mock.calls[index][0]).toEqual(step)
   );
+}
+
+function testDuration(callStack: ConvoyMessage[]): number {
+  const durationOffset = 1000;
+  let duration = callStack.reduce(
+    (result, { fromStage, toStage, nbPeople }) => {
+      let dur = result + (toStage - fromStage) * 1000;
+      console.log({ nbPeople });
+      if (nbPeople > 0) {
+        dur = dur + 2000;
+      }
+      return dur;
+    },
+    durationOffset
+  );
+  console.log({ duration });
+  return duration;
 }
